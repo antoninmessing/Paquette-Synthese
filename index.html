@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SPAs avec Vue</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+  
+      <div id="app">
+        <!-- Page d'accueil, visibile uniquement si la variable page est égal à 'accueil' -->
+        <div id="accueil" v-if="page == 'accueil'">
+          <div class="blubTurquoise"></div>
+          <div class="blubMauve"></div>
+          <div class="blubBleu"></div>
+          <div class="wrapper1">
+            <h1>Accueil</h1>
+              <a
+              class="bouton"
+              href="#"
+              @click.prevent="changerPage('musiques')"
+              >
+                <img src="/data/vinyl-record.png" width="25" height="25"></img>
+                Liste de musiques
+              </a>
+          </div>
+        </div>
+
+        <!-- Page d'informations, visibile uniquement si la variable page est égal à 'informations' -->
+        <div id="informations" v-if="page == 'informations'">
+          <h1>Page informations</h1>
+          <p>
+            <!-- page_infos vient de la fonction changerPage() -->
+            page_infos passé en paramètre: {{ page_infos }}
+          </p>
+          <p>
+            <a href="#" @click.prevent="changerPage('accueil')">Retour</a>
+          </p>
+        </div>
+
+        <div id="musiques" v-if="page == 'musiques'">
+          <div class="blubTurquoise"></div>
+          <div class="blubMauve"></div>
+          <div class="blubBleu"></div>
+          <div class="blubTurquoise2"></div>
+          <div class="blubBleu2"></div>
+          <div class="blubMauve2"></div>
+          <div class="wrapper2">
+            <div class="entete">
+              <h1>Liste de musiques</h1>
+              <div class="filtres">
+                Recherche
+                <input type="text" v-model="recherche_texte" />
+              </div>
+            </div>
+            <div class="champs">
+              <span class="titre"><strong>Titre</strong></span>
+              <span class="artiste"><strong>Auteur</strong></span>
+              <span class="temps"><strong>Durée</strong></span>
+            </div>
+            <div class="liste">
+              <div
+                class="musique"
+                v-for="musique of
+                              musiques.filter(filtrerMusiques)"
+                @click.prevent="changerPage('musiques',
+                              musique)"
+              >
+                <div @click.prevent="selectionnerMusique(musique)" class="morceau">
+                  <span class="titre">{{ musique.titre }} </span>
+                  <span class="artiste">{{ musique.artiste }} </span>
+                  <span class="temps">{{ conversionMinute(musique.temps)}}</span>
+                </div>
+              </div>
+            </div>
+            <div
+              class="musique-active"
+              v-if="musique_selectionner != null"
+            >
+              <div>
+                <h4>{{musique_selectionner.titre}}</h4>
+                <img :src="'data/' + musique_selectionner.image" style="width: 40%; border-radius: 25px;"/>
+                <div class="details">
+                    <button @click="play()">Play</button>
+                    <button @click="stop()">Stop</button>
+                    <img
+                    @click="diminuer_volume"
+                    class="diminuer_volume"
+                    src="data/diminuer-le-volume.png"
+                    alt=""
+                  />
+                  <img
+                    @click="augmenter_volume"
+                    class="augmenter_volume"
+                    src="data/augmenter-le-volume.png"
+                    alt=""
+                  />
+                </div>
+                <div class="barre_lecture">
+                  <audio
+                    autoplay
+                    :src="'data/' + musique_selectionner.audio"
+                    ref="balise_audio"
+                    ref="volume"
+                    @timeupdate="chargementMusique"
+                    type="audio/mpeg"
+                  ></audio>
+                </div>
+                <div class="barre_chargement">
+                  <div
+                    class="chargement"
+                    :style=" 'width:' + ((depart_minuteur/duree_musique)*100) +'%'"
+                  ></div>
+                </div>
+              </div>
+              <div v-if="duree_musique != null">
+                {{
+                conversionMinute(Math.round((depart_minuteur/duree_musique)*musique_selectionner.temps))}}
+                /{{ conversionMinute(musique_selectionner.temps)}}
+              </div>
+            </div>
+            <br/>
+            <h4>
+                <a class="bouton" href="#" @click.prevent="changerPage('accueil')" style="width: 200px">Retour</a>
+            </h4>
+          </div>
+          </div>
+         
+      </div>
+    </div>
+
+    <script src="js/main.js" type="module"></script>
+  </body>
+</html>
